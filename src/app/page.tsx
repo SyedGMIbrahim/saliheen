@@ -27,7 +27,6 @@ const categories = [
     icon: "🤝",
     description: "Build meaningful connections within the Muslim community",
     features: [
-      "Halal Matrimony",
       "Counselling",
       "Motivation"
     ],
@@ -155,8 +154,88 @@ export default function Home() {
             >
               Through the way of the Salaf
             </motion.p>
+            
+
           </motion.div>
         </div>
+      </motion.section>
+
+      {/* Live Announcement Section */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"
+      >
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          className="bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden"
+        >
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-10 left-10 w-20 h-20 bg-white rounded-full animate-pulse"></div>
+            <div className="absolute bottom-10 right-10 w-32 h-32 bg-white rounded-full animate-pulse animation-delay-2000"></div>
+            <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white rounded-full animate-pulse animation-delay-4000"></div>
+          </div>
+          
+          <div className="relative z-10">
+            <motion.div
+              initial={{ scale: 0 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ type: "spring", duration: 0.8 }}
+              className="inline-block mb-4"
+            >
+              <span className="text-6xl">💍</span>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4"
+            >
+              <span className="text-white font-bold text-sm uppercase tracking-wide">🎉 Now Live!</span>
+            </motion.div>
+            
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+              Halal Matrimony is Now Live!
+            </h2>
+            
+            <p className="text-lg md:text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+              Find your life partner the halal way. With wali supervision, Islamic values, and verified profiles - start your journey towards a blessed marriage today.
+            </p>
+            
+            <div className="flex justify-center">
+              <motion.a
+                href="/matrimony"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-12 py-4 bg-white text-rose-600 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all flex items-center gap-2"
+              >
+                Explore Halal Matrimony
+                <span>→</span>
+              </motion.a>
+            </div>
+            
+            <div className="mt-8 flex flex-wrap justify-center gap-6 text-white/90 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">✓</span>
+                <span>Wali Supervised</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">✓</span>
+                <span>Verified Profiles</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">✓</span>
+                <span>Islamic Values</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </motion.section>
 
       {/* Features Section */}

@@ -1,0 +1,486 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id                   String              @id @default(cuid())
+  email                String?             @unique
+  phoneNumber          String?             @unique
+  password             String?
+  name                 String?
+  
+  // Auth
+  authProvider         AuthProvider        @default(EMAIL)
+  emailVerified        Boolean             @default(false)
+  phoneVerified        Boolean             @default(false)
+  
+  // User Type & Status
+  userType             UserType?
+  role                 UserRole            @default(USER)
+  accountStatus        AccountStatus       @default(ACTIVE)
+  
+  // Oath & Verification
+  shahadaAccepted      Boolean             @default(false)
+  shahadaAcceptedAt    DateTime?
+  verificationStatus   VerificationStatus  @default(UNVERIFIED)
+  livePhotoUrl         String?
+  idPhotoUrl           String?
+  verifiedAt           DateTime?
+  verifiedBy           String?
+  rejectionReason      String?
+  
+  // Subscription
+  subscriptionPlan     SubscriptionPlan?
+  subscriptionStatus   SubscriptionStatus  @default(INACTIVE)
+  stripeCustomerId     String?             @unique
+  stripeSubscriptionId String?             @unique
+  subscriptionEndsAt   DateTime?
+  trialEndsAt          DateTime?
+  
+  // Relations
+  profile              Profile?
+  waliConnections      WaliConnection[]    @relation("WaliUser")
+  femaleConnections    WaliConnection[]    @relation("FemaleUser")
+  sentAcceptances      Acceptance[]        @relation("SentAcceptances")
+  receivedAcceptances  Acceptance[]        @relation("ReceivedAcceptances")
+  maleMatches          Match[]             @relation("MaleUser")
+  femaleMatches        Match[]             @relation("FemaleUser")
+  chatMessages         ChatMessage[]
+  videoCalls           VideoCall[]
+  profileViews         ProfileView[]       @relation("Viewer")
+  profileViewsReceived ProfileView[]       @relation("ViewedProfile")
+  reports              Report[]            @relation("Reporter")
+  reportsReceived      Report[]            @relation("ReportedUser")
+  
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  lastLoginAt          DateTime?
+  
+  @@index([email])
+  @@index([phoneNumber])
+  @@index([userType])
+  @@index([verificationStatus])
+  @@index([subscriptionStatus])
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+  APPLE
+  PHONE
+}
+
+enum UserType {
+  MALE
+  FEMALE
+  WALI
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+  DELETED
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum SubscriptionPlan {
+  SILVER
+  GOLD
+  PLATINUM
+  FAMILY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  PAST_DUE
+  TRIAL
+}
+
+// ============================================
+// WALI CONNECTION
+// ============================================
+
+model WaliConnection {
+  id            String           @id @default(cuid())
+  femaleUserId  String
+  femaleUser    User             @relation("FemaleUser", fields: [femaleUserId], references: [id], onDelete: Cascade)
+  waliUserId    String
+  waliUser      User             @relation("WaliUser", fields: [waliUserId], references: [id], onDelete: Cascade)
+  relationship  String
+  status        ConnectionStatus @default(PENDING)
+  inviteToken   String?          @unique
+  invitedAt     DateTime         @default(now())
+  acceptedAt    DateTime?
+  
+  @@unique([femaleUserId, waliUserId])
+  @@index([femaleUserId])
+  @@index([waliUserId])
+  @@index([status])
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// ============================================
+// PROFILE
+// ============================================
+
+model Profile {
+  id                    String         @id @default(cuid())
+  userId                String         @unique
+  user                  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Basic Info
+  age                   Int
+  gender                Gender
+  maritalStatus         MaritalStatus
+  children              Int            @default(0)
+  
+  // Physical Attributes
+  height                Int? // in cm
+  weight                Int? // in kg
+  ethnicity             String?
+  complexion            String?
+  
+  // Religious Info
+  sect                  String
+  prayerFrequency       PrayerFrequency
+  quranKnowledge        QuranKnowledge
+  hijabBeardStatus      HijabBeardStatus?
+  religiousLevel        ReligiousLevel
+  
+  // Education & Career
+  educationLevel        EducationLevel
+  fieldOfStudy          String?
+  occupation            String?
+  employmentStatus      EmploymentStatus
+  incomeRange           String?
+  
+  // Family Background
+  fatherOccupation      String?
+  motherOccupation      String?
+  siblings              Int            @default(0)
+  familyValues          String?        @db.Text
+  familyType            FamilyType?
+  
+  // Location
+  country               String
+  city                  String
+  willingToRelocate     Boolean        @default(false)
+  
+  // About & Bio
+  bio                   String?        @db.Text
+  interests             String?        @db.Text
+  lookingFor            String?        @db.Text
+  
+  // Preferences
+  preferredAgeMin       Int?
+  preferredAgeMax       Int?
+  preferredEducation    EducationLevel?
+  preferredReligious    ReligiousLevel?
+  dealbreakers          String?        @db.Text
+  
+  // Profile Status
+  isActive              Boolean        @default(true)
+  isComplete            Boolean        @default(false)
+  completionPercentage  Int            @default(0)
+  
+  // Photos (only for males)
+  photos                ProfilePhoto[]
+  
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  
+  @@index([gender, age, country])
+  @@index([userId])
+  @@index([isActive])
+}
+
+model ProfilePhoto {
+  id         String   @id @default(cuid())
+  profileId  String
+  profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  photoUrl   String
+  order      Int      @default(0)
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  
+  @@index([profileId])
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum MaritalStatus {
+  NEVER_MARRIED
+  DIVORCED
+  WIDOWED
+  SEPARATED
+}
+
+enum PrayerFrequency {
+  FIVE_TIMES
+  MOSTLY
+  SOMETIMES
+  RARELY
+}
+
+enum QuranKnowledge {
+  MEMORIZED_FULL
+  MEMORIZED_PARTIAL
+  CAN_READ
+  LEARNING
+  CANNOT_READ
+}
+
+enum HijabBeardStatus {
+  ALWAYS
+  MOSTLY
+  SOMETIMES
+  PLANNING
+  NO
+}
+
+enum ReligiousLevel {
+  VERY_RELIGIOUS
+  MODERATELY_RELIGIOUS
+  SOMEWHAT_RELIGIOUS
+  NOT_VERY_RELIGIOUS
+}
+
+enum EducationLevel {
+  HIGH_SCHOOL
+  ASSOCIATE
+  BACHELOR
+  MASTER
+  DOCTORATE
+  VOCATIONAL
+  OTHER
+}
+
+enum EmploymentStatus {
+  EMPLOYED
+  SELF_EMPLOYED
+  STUDENT
+  UNEMPLOYED
+  RETIRED
+}
+
+enum FamilyType {
+  NUCLEAR
+  JOINT
+  EXTENDED
+}
+
+// ============================================
+// ACCEPTANCE & MATCHING
+// ============================================
+
+model Acceptance {
+  id          String           @id @default(cuid())
+  senderId    String
+  sender      User             @relation("SentAcceptances", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId  String
+  receiver    User             @relation("ReceivedAcceptances", fields: [receiverId], references: [id], onDelete: Cascade)
+  status      AcceptanceStatus @default(PENDING)
+  message     String?          @db.Text
+  respondedAt DateTime?
+  createdAt   DateTime         @default(now())
+  
+  @@unique([senderId, receiverId])
+  @@index([receiverId, status])
+  @@index([senderId])
+}
+
+enum AcceptanceStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+model Match {
+  id             String        @id @default(cuid())
+  maleUserId     String
+  maleUser       User          @relation("MaleUser", fields: [maleUserId], references: [id], onDelete: Cascade)
+  femaleUserId   String
+  femaleUser     User          @relation("FemaleUser", fields: [femaleUserId], references: [id], onDelete: Cascade)
+  waliUserId     String?
+  
+  // Acceptance tracking
+  maleAccepted   Boolean       @default(false)
+  femaleAccepted Boolean       @default(false)
+  waliAccepted   Boolean       @default(false)
+  
+  // Match status
+  fullyMatched   Boolean       @default(false)
+  matchedAt      DateTime?
+  
+  // Communication
+  chatEnabled    Boolean       @default(false)
+  chatMessages   ChatMessage[]
+  videoCalls     VideoCall[]
+  
+  // Status
+  status         MatchStatus   @default(PENDING)
+  
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  
+  @@unique([maleUserId, femaleUserId])
+  @@index([maleUserId])
+  @@index([femaleUserId])
+  @@index([waliUserId])
+  @@index([fullyMatched])
+  @@index([status])
+}
+
+enum MatchStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// CHAT
+// ============================================
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  matchId   String
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  @@index([matchId, createdAt])
+  @@index([senderId])
+}
+
+// ============================================
+// VIDEO CALLING
+// ============================================
+
+model VideoCall {
+  id           String     @id @default(cuid())
+  matchId      String
+  match        Match      @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  initiatorId  String
+  initiator    User       @relation(fields: [initiatorId], references: [id], onDelete: Cascade)
+  
+  roomId       String     @unique
+  token        String?    @db.Text
+  status       CallStatus @default(WAITING)
+  
+  maleJoined   Boolean    @default(false)
+  femaleJoined Boolean    @default(false)
+  waliJoined   Boolean    @default(false)
+  
+  startedAt    DateTime?
+  endedAt      DateTime?
+  duration     Int?       // in seconds
+  
+  createdAt    DateTime   @default(now())
+  
+  @@index([matchId])
+  @@index([status])
+}
+
+enum CallStatus {
+  WAITING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+// ============================================
+// ANALYTICS & TRACKING
+// ============================================
+
+model ProfileView {
+  id              String   @id @default(cuid())
+  viewerId        String
+  viewer          User     @relation("Viewer", fields: [viewerId], references: [id], onDelete: Cascade)
+  viewedProfileId String
+  viewedProfile   User     @relation("ViewedProfile", fields: [viewedProfileId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  
+  @@unique([viewerId, viewedProfileId, createdAt])
+  @@index([viewedProfileId])
+  @@index([viewerId])
+}
+
+// ============================================
+// REPORTS & MODERATION
+// ============================================
+
+model Report {
+  id             String       @id @default(cuid())
+  reporterId     String
+  reporter       User         @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUserId String
+  reportedUser   User         @relation("ReportedUser", fields: [reportedUserId], references: [id], onDelete: Cascade)
+  reason         ReportReason
+  description    String       @db.Text
+  status         ReportStatus @default(PENDING)
+  actionTaken    String?      @db.Text
+  resolvedBy     String?
+  resolvedAt     DateTime?
+  createdAt      DateTime     @default(now())
+  
+  @@index([reportedUserId])
+  @@index([status])
+}
+
+enum ReportReason {
+  INAPPROPRIATE_BEHAVIOR
+  FAKE_PROFILE
+  HARASSMENT
+  SPAM
+  MISLEADING_INFO
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}

@@ -10,6 +10,32 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* Islamic Theme Colors */
+  --color-islamic-green: #00A86B;
+  --color-islamic-gold: #D4AF37;
+  --color-islamic-dark: #1A4D2E;
+  --color-islamic-light: #E8F5E9;
+  --color-islamic-green-50: #E6F9F2;
+  --color-islamic-green-100: #CCF3E5;
+  --color-islamic-green-200: #99E7CB;
+  --color-islamic-green-300: #66DBB1;
+  --color-islamic-green-400: #33CF97;
+  --color-islamic-green-500: #00A86B;
+  --color-islamic-green-600: #008656;
+  --color-islamic-green-700: #006440;
+  --color-islamic-green-800: #00422B;
+  --color-islamic-green-900: #002115;
+  --color-islamic-gold-50: #FAF7ED;
+  --color-islamic-gold-100: #F5EFDB;
+  --color-islamic-gold-200: #EBDFB7;
+  --color-islamic-gold-300: #E1CF93;
+  --color-islamic-gold-400: #D7BF6F;
+  --color-islamic-gold-500: #D4AF37;
+  --color-islamic-gold-600: #AA8C2C;
+  --color-islamic-gold-700: #7F6921;
+  --color-islamic-gold-800: #554616;
+  --color-islamic-gold-900: #2A230B;
 }
 
 @media (prefers-color-scheme: dark) {
