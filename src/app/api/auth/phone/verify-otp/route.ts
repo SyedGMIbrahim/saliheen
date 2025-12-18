@@ -1,24 +1,53 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import twilio from "twilio";
+import { prisma } from "@/lib/prisma";
 
-export async function POST(request: NextRequest) {
+const client = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
-    const { phone, otp } = body;
+    const { phoneNumber, code, name } = await req.json();
 
-    // TODO: Implement OTP verification logic
-    // 1. Validate input
-    // 2. Check OTP in database
-    // 3. Verify OTP matches and not expired
-    // 4. Mark phone as verified
-    // 5. Delete used OTP
+    // Verify OTP
+    const verificationCheck = await client.verify.v2
+      .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
+      .verificationChecks
+      .create({ to: phoneNumber, code });
 
-    return NextResponse.json(
-      { message: 'Phone verified successfully', verified: true },
-      { status: 200 }
-    );
+    if (verificationCheck.status !== "approved") {
+      return NextResponse.json(
+        { error: "Invalid OTP" },
+        { status: 400 }
+      );
+    }
+
+    // Create or find user
+    let user = await prisma.user.findFirst({
+      where: { phoneNumber }
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          name,
+          phoneNumber,
+          authProvider: "PHONE",
+          phoneVerified: true,
+        }
+      });
+    }
+
+    return NextResponse.json({ 
+      success: true,
+      userId: user.id 
+    });
   } catch (error) {
+    console.error("OTP verification error:", error);
     return NextResponse.json(
-      { error: 'OTP verification failed' },
+      { error: "Verification failed" },
       { status: 500 }
     );
   }

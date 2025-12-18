@@ -43,31 +43,31 @@ const features = [
 
 const steps = [
   {
-    number: "01",
+    number: "1",
     title: "Sign Up & Verify",
     description: "Create your account and complete identity verification",
     icon: CheckCircle2
   },
   {
-    number: "02",
+    number: "2",
     title: "Create Profile",
     description: "Build your detailed halal profile with Islamic values",
     icon: Users
   },
   {
-    number: "03",
+    number: "3",
     title: "Browse Matches",
     description: "View verified profiles that align with your preferences",
     icon: Heart
   },
   {
-    number: "04",
+    number: "4",
     title: "Connect with Family",
     description: "Wali approves and joins all communications",
     icon: Shield
   },
   {
-    number: "05",
+    number: "5",
     title: "Get Married!",
     description: "Complete your deen with your perfect halal match",
     icon: Heart
@@ -76,21 +76,21 @@ const steps = [
 
 const testimonials = [
   {
-    name: "Ahmed & Fatima",
+    name: "Muhammed & Khadija",
     location: "London, UK",
     image: "👨‍👩‍👧",
     story: "Alhamdulillah! We found each other through Saliheen. The wali involvement made our families comfortable from day one. Married for 2 years now with a beautiful daughter.",
     rating: 5
   },
   {
-    name: "Omar & Aisha",
+    name: "Abu Bakr & Zaynab",
     location: "New York, USA",
     image: "👨‍👩‍👦",
     story: "The verification process gave us confidence. No fake profiles, all serious people looking for marriage. Found my perfect match in 3 months!",
     rating: 5
   },
   {
-    name: "Ibrahim & Maryam",
+    name: "Ibrahim & Manal",
     location: "Dubai, UAE",
     image: "👨‍👩‍👧‍👦",
     story: "Being able to involve our families from the beginning was crucial. The platform made it easy and comfortable. Highly recommend to everyone!",
@@ -391,7 +391,7 @@ export default function MatrimonyPage() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="h-full hover:shadow-xl transition-shadow border-2 border-transparent hover:border-rose-400 bg-white">
+                <Card className="h-full hover:shadow-xl transition-shadow border-2 border-transparent hover:border-rose-400 bg-gradient-to-br from-pink-100 to-rose-200">
                   <CardHeader>
                     <div className="w-14 h-14 bg-pink-50 rounded-full flex items-center justify-center mb-4">
                       <feature.icon className="w-7 h-7 text-rose-500" />
@@ -478,10 +478,6 @@ export default function MatrimonyPage() {
                     </CardContent>
                   </Card>
                 </div>
-                
-                {index < steps.length - 1 && (
-                  <div className="absolute left-10 top-20 w-0.5 h-12 bg-pink-200" />
-                )}
               </motion.div>
             ))}
           </div>
@@ -648,7 +644,7 @@ export default function MatrimonyPage() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className={`h-full relative bg-white ${plan.highlighted ? 'border-2 border-rose-400 shadow-2xl scale-105' : ''}`}>
+                <Card className={`h-full relative bg-gradient-to-br from-pink-100 to-rose-300 hover:bg-gradient-to-br hover:from-pink-100 hover:to-rose-400 hover:shadow-2xl ${plan.highlighted ? 'border-2 border-rose-400 shadow-2xl scale-105' : ''}`}>
                   {plan.highlighted && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                       <Badge className="bg-gradient-to-r from-rose-500 to-pink-500 text-white px-4 py-1">Most Popular</Badge>
@@ -709,7 +705,7 @@ export default function MatrimonyPage() {
                 transition={{ delay: index * 0.05 }}
               >
                 <Card 
-                  className="cursor-pointer hover:shadow-md transition-shadow bg-white"
+                  className="cursor-pointer hover:shadow-md transition-shadow bg-gradient-to-br from-pink-200 to-rose-100"
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
                 >
                   <CardHeader>

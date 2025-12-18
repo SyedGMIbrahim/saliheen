@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const validation = signupSchema.safeParse(body);
     if (!validation.success) {
       return NextResponse.json(
-        { error: 'Invalid input', details: validation.error.errors },
+        { error: 'Invalid input', details: validation.error.issues },
         { status: 400 }
       );
     }
@@ -45,16 +45,6 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         name,
-        authProvider: 'EMAIL',
-        emailVerified: false,
-        phoneVerified: false,
-        userType: null,
-        role: 'USER',
-        accountStatus: 'ACTIVE',
-        shahadaAccepted: false,
-        verificationStatus: 'UNVERIFIED',
-        subscriptionPlan: null,
-        subscriptionStatus: 'INACTIVE',
       }
     });
 

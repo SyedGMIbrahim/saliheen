@@ -42,11 +42,11 @@ export const authOptions: NextAuthOptions = {
           email: user.email || '',
           name: user.name,
           image: null,
-          userType: user.userType || 'NOT_SET',
-          verificationStatus: user.verificationStatus,
-          subscriptionStatus: user.subscriptionStatus,
-          shahadaAccepted: user.shahadaAccepted,
-          role: user.role,
+          userType: (user.userType as string) || 'NOT_SET',
+          verificationStatus: user.verificationStatus as string,
+          subscriptionStatus: (user.subscriptionStatus as string),
+          shahadaAccepted: user.shahadaAccepted as boolean,
+          role: user.role as string,
         };
       }
     }),
