@@ -152,12 +152,15 @@ export default function SignupPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phoneNumber: `${phoneData.countryCode}${phoneData.phoneNumber}`,
-          otp,
+          code: otp,
+          name: "User", // Default name, can be updated in profile
         }),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error("Invalid OTP");
+        throw new Error(result.error || "Invalid OTP");
       }
 
       router.push("/onboarding/shahada");
@@ -169,8 +172,15 @@ export default function SignupPage() {
   };
 
   const handleGoogleSignup = async () => {
-    setIsLoading(true);
-    await signIn("google", { callbackUrl: "/onboarding/shahada" });
+    try {
+      setIsLoading(true);
+      await signIn("google", { 
+        callbackUrl: "/onboarding/shahada",
+        redirect: true,
+      });
+    } catch (error) {
+      setIsLoading(false);
+    }
   };
 
   const watchPassword = emailForm.watch("password");
@@ -231,7 +241,7 @@ export default function SignupPage() {
                 <form onSubmit={emailForm.handleSubmit(handleEmailSignup)} className="space-y-4">
                   {/* Name */}
                   <div className="space-y-2">
-                    <Label htmlFor="name">Full Name *</Label>
+                    <Label htmlFor="name" className="text-gray-900">Full Name *</Label>
                     <Input
                       id="name"
                       placeholder="Enter your full name"
@@ -244,7 +254,7 @@ export default function SignupPage() {
 
                   {/* Email */}
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address *</Label>
+                    <Label htmlFor="email" className="text-gray-900">Email Address *</Label>
                     <Input
                       id="email"
                       type="email"
@@ -258,7 +268,7 @@ export default function SignupPage() {
 
                   {/* Password */}
                   <div className="space-y-2">
-                    <Label htmlFor="password">Password *</Label>
+                    <Label htmlFor="password" className="text-gray-900">Password *</Label>
                     <div className="relative">
                       <Input
                         id="password"
@@ -303,7 +313,7 @@ export default function SignupPage() {
 
                   {/* Confirm Password */}
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                    <Label htmlFor="confirmPassword" className="text-gray-900">Confirm Password *</Label>
                     <div className="relative">
                       <Input
                         id="confirmPassword"
@@ -332,7 +342,7 @@ export default function SignupPage() {
                       className="mt-1"
                       {...emailForm.register("agreeToTerms")}
                     />
-                    <Label htmlFor="agreeToTerms" className="text-sm font-normal cursor-pointer">
+                    <Label htmlFor="agreeToTerms" className="text-sm font-normal cursor-pointer text-gray-900">
                       I agree to the{" "}
                       <Link href="/terms" className="text-rose-600 hover:underline">
                         Terms of Service
@@ -349,9 +359,9 @@ export default function SignupPage() {
 
                   {/* Error Message */}
                   {error && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{error}</AlertDescription>
+                    <Alert variant="destructive" className="bg-red-50 border-red-500">
+                      <AlertCircle className="h-4 w-4 !text-red-600" />
+                      <AlertDescription className="text-red-800">{error}</AlertDescription>
                     </Alert>
                   )}
 
@@ -383,7 +393,7 @@ export default function SignupPage() {
                         <select
                           value={phoneData.countryCode}
                           onChange={(e) => setPhoneData({ ...phoneData, countryCode: e.target.value })}
-                          className="px-3 py-2 border rounded-md w-24 text-gray-800"
+                          className="px-3 py-2 border rounded-md w-30 text-gray-800"
                         >
                           <option value="+1">🇺🇸 +1</option>
                           <option value="+44">🇬🇧 +44</option>
@@ -406,9 +416,9 @@ export default function SignupPage() {
                     </div>
 
                     {error && (
-                      <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>{error}</AlertDescription>
+                      <Alert variant="destructive" className="bg-red-50 border-red-500">
+                        <AlertCircle className="h-4 w-4 !text-red-600" />
+                        <AlertDescription className="text-red-800">{error}</AlertDescription>
                       </Alert>
                     )}
 
@@ -430,7 +440,7 @@ export default function SignupPage() {
                 ) : (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="otp">Enter OTP *</Label>
+                      <Label htmlFor="otp" className="text-gray-900">Enter OTP *</Label>
                       <Input
                         id="otp"
                         type="text"
@@ -438,7 +448,7 @@ export default function SignupPage() {
                         maxLength={6}
                         value={otp}
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                        className="text-center text-2xl tracking-widest"
+                        className="text-center text-2xl tracking-widest text-gray-900"
                       />
                       <p className="text-sm text-gray-500">
                         OTP sent to {phoneData.countryCode} {phoneData.phoneNumber}
@@ -446,9 +456,9 @@ export default function SignupPage() {
                     </div>
 
                     {error && (
-                      <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>{error}</AlertDescription>
+                      <Alert variant="destructive" className="bg-red-50 border-red-500">
+                        <AlertCircle className="h-4 w-4 !text-red-600" />
+                        <AlertDescription className="text-red-800">{error}</AlertDescription>
                       </Alert>
                     )}
 
@@ -489,9 +499,9 @@ export default function SignupPage() {
                   </p>
                   
                   {error && (
-                    <Alert variant="destructive" className="mb-4">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{error}</AlertDescription>
+                    <Alert variant="destructive" className="mb-4 bg-red-50 border-red-500">
+                      <AlertCircle className="h-4 w-4 !text-red-600" />
+                      <AlertDescription className="text-red-800">{error}</AlertDescription>
                     </Alert>
                   )}
 

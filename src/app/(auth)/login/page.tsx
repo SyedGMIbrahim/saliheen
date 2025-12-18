@@ -43,46 +43,27 @@ export default function LoginPage() {
       setIsLoading(true);
       setError("");
 
+      console.log("Starting login...");
+      
+      // Use NextAuth's built-in redirect with callbackUrl
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
-        redirect: false,
+        callbackUrl: "/dashboard",
       });
 
+      console.log("SignIn result:", result);
+
+      // If we get here without redirect, there was an error
       if (result?.error) {
+        console.log("Login error:", result.error);
         setError("Invalid email or password");
         toast.error("Login failed", {
           description: "Invalid email or password. Please try again.",
         });
-        return;
-      }
-
-      // Success
-      toast.success("Welcome back!", {
-        description: "Redirecting you now...",
-      });
-
-      // Redirect based on user status
-      const response = await fetch("/api/auth/session");
-      const session = await response.json();
-
-      if (session?.user) {
-        const user = session.user;
-
-        // Determine redirect based on user status
-        if (!user.userType) {
-          router.push("/onboarding/user-type");
-        } else if (user.verificationStatus !== "VERIFIED") {
-          router.push("/verification");
-        } else if (user.subscriptionStatus !== "ACTIVE") {
-          router.push("/pricing");
-        } else {
-          router.push("/dashboard");
-        }
-      } else {
-        router.push("/dashboard");
       }
     } catch (err: any) {
+      console.error("Login error:", err);
       setError(err.message || "Something went wrong");
       toast.error("Error", {
         description: err.message || "Something went wrong",
@@ -174,7 +155,7 @@ export default function LoginPage() {
                     id="email"
                     type="email"
                     placeholder="your.email@example.com"
-                    className="pl-10"
+                    className="pl-10 text-black"
                     {...loginForm.register("email")}
                   />
                 </div>
@@ -196,6 +177,7 @@ export default function LoginPage() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
+                    className="text-black"
                     {...loginForm.register("password")}
                   />
                   <button
@@ -213,9 +195,9 @@ export default function LoginPage() {
 
               {/* Error Message */}
               {error && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
+                <Alert variant="destructive" className="bg-red-50 border-red-500">
+                  <AlertCircle className="h-4 w-4 !text-red-600" />
+                  <AlertDescription className="text-red-800">{error}</AlertDescription>
                 </Alert>
               )}
 

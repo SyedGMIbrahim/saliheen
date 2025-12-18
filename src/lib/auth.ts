@@ -16,26 +16,37 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log("Missing credentials");
           throw new Error("Invalid credentials");
         }
 
+        console.log("Looking up user:", credentials.email);
         const user = await prisma.user.findUnique({
           where: { email: credentials.email }
         });
 
-        if (!user || !user.password) {
+        if (!user) {
+          console.log("User not found:", credentials.email);
           throw new Error("Invalid credentials");
         }
 
+        if (!user.password) {
+          console.log("User has no password (likely OAuth user):", credentials.email);
+          throw new Error("Invalid credentials");
+        }
+
+        console.log("Comparing passwords...");
         const isCorrectPassword = await bcrypt.compare(
           credentials.password,
           user.password
         );
 
         if (!isCorrectPassword) {
+          console.log("Incorrect password for:", credentials.email);
           throw new Error("Invalid credentials");
         }
 
+        console.log("Login successful for:", credentials.email);
         // Return user in the format expected by NextAuth
         return {
           id: user.id,
@@ -80,7 +91,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/login",
+    error: "/auth/error",
   },
   session: {
     strategy: "jwt",

@@ -11,13 +11,18 @@ export async function POST(req: Request) {
   try {
     const { phoneNumber, code, name } = await req.json();
 
+    console.log("Verifying OTP:", { phoneNumber, code, name });
+
     // Verify OTP
     const verificationCheck = await client.verify.v2
       .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
       .verificationChecks
       .create({ to: phoneNumber, code });
 
+    console.log("Verification result:", verificationCheck.status);
+
     if (verificationCheck.status !== "approved") {
+      console.log("OTP not approved:", verificationCheck);
       return NextResponse.json(
         { error: "Invalid OTP" },
         { status: 400 }
@@ -25,7 +30,7 @@ export async function POST(req: Request) {
     }
 
     // Create or find user
-    let user = await prisma.user.findFirst({
+    let user = await prisma.user.findUnique({
       where: { phoneNumber }
     });
 

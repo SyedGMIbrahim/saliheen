@@ -550,7 +550,7 @@ export default function MatrimonyPage() {
               className="absolute text-2xl"
               style={{
                 left: `${Math.random() * 100}%`,
-                top: -20,
+                top: -30,
               }}
               animate={{
                 y: ["0vh", "110vh"],
