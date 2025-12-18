@@ -27,6 +27,7 @@ const categories = [
     icon: "🤝",
     description: "Build meaningful connections within the Muslim community",
     features: [
+      "Halal Matrimony (Live)",
       "Counselling",
       "Motivation"
     ],

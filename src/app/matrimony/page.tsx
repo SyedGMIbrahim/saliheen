@@ -507,7 +507,7 @@ export default function MatrimonyPage() {
               
               <div className="space-y-6">
                 {[
-                  { icon: CheckCircle2, text: "Endorsed by Islamic scholars and imams" },
+                  { icon: CheckCircle2, text: "Endorsed by Islamic scholars and Imams" },
                   { icon: Shield, text: "Zero tolerance for haram activities" },
                   { icon: Heart, text: "Focused on marriage, not dating" },
                   { icon: Users, text: "Family-centric approach with wali involvement" }
