@@ -316,7 +316,7 @@ export default function MatrimonyPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-rose-500 text-rose-600 hover:bg-gradient-to-r hover:from-rose-500 hover:to-pink-600 hover:text-white text-lg px-8 py-6"
+                className="border-rose-500 hover:from-rose-600 hover:to-pink-700 bg-gradient-to-r from-rose-500 to-pink-600 text-white text-lg px-8 py-6"
                 onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 How It Works
